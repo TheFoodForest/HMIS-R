@@ -1,0 +1,8 @@
+"","Race","meanage","minage","maxage","medianage","lowerquartile","upperquartile","n"
+"1","Black or African American",25,0,77,22,8,38,2295
+"2","White",34,0,84,35,21,50,2283
+"3","Multi-racial",18,0,81,13,4,29,441
+"4","American Indian or Alaska Native",32,0,79,32,19,48,122
+"5","Native Hawaiian or Other Pacific Islander",28,1,73,29,13,40,88
+"6","Asian",28,0,63,32,12,40,78
+"7","Unknown",30,1,59,24,20,43,28

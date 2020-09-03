@@ -1,0 +1,206 @@
+"","date","Project_Type","Race","num_people_enroll"
+"1","2019","Emergency Shelter","American Indian or Alaska Native",75
+"2","2019","Emergency Shelter","Asian",59
+"3","2019","Emergency Shelter","Black or African American",1094
+"4","2019","Emergency Shelter","Multi-racial",193
+"5","2019","Emergency Shelter","Native Hawaiian or Other Pacific Islander",37
+"6","2019","Emergency Shelter","Unknown",48
+"7","2019","Emergency Shelter","White",1289
+"8","2019","Other","American Indian or Alaska Native",38
+"9","2019","Other","Asian",18
+"10","2019","Other","Black or African American",563
+"11","2019","Other","Multi-racial",75
+"12","2019","Other","Native Hawaiian or Other Pacific Islander",16
+"13","2019","Other","Unknown",24
+"14","2019","Other","White",658
+"15","2019","Permanent Housing","American Indian or Alaska Native",42
+"16","2019","Permanent Housing","Asian",29
+"17","2019","Permanent Housing","Black or African American",813
+"18","2019","Permanent Housing","Multi-racial",180
+"19","2019","Permanent Housing","Native Hawaiian or Other Pacific Islander",34
+"20","2019","Permanent Housing","Unknown",14
+"21","2019","Permanent Housing","White",962
+"22","2019","Rapid Re-Housing","American Indian or Alaska Native",54
+"23","2019","Rapid Re-Housing","Asian",60
+"24","2019","Rapid Re-Housing","Black or African American",2330
+"25","2019","Rapid Re-Housing","Multi-racial",371
+"26","2019","Rapid Re-Housing","Native Hawaiian or Other Pacific Islander",47
+"27","2019","Rapid Re-Housing","Unknown",13
+"28","2019","Rapid Re-Housing","White",1291
+"29","2019","Street Outreach","American Indian or Alaska Native",134
+"30","2019","Street Outreach","Asian",51
+"31","2019","Street Outreach","Black or African American",1542
+"32","2019","Street Outreach","Multi-racial",195
+"33","2019","Street Outreach","Native Hawaiian or Other Pacific Islander",61
+"34","2019","Street Outreach","Unknown",99
+"35","2019","Street Outreach","White",2131
+"36","2019","Transitional Housing","American Indian or Alaska Native",23
+"37","2019","Transitional Housing","Asian",5
+"38","2019","Transitional Housing","Black or African American",393
+"39","2019","Transitional Housing","Multi-racial",64
+"40","2019","Transitional Housing","Native Hawaiian or Other Pacific Islander",7
+"41","2019","Transitional Housing","Unknown",7
+"42","2019","Transitional Housing","White",468
+"43","2017","Emergency Shelter","American Indian or Alaska Native",86
+"44","2017","Emergency Shelter","Asian",31
+"45","2017","Emergency Shelter","Black or African American",1710
+"46","2017","Emergency Shelter","Multi-racial",353
+"47","2017","Emergency Shelter","Native Hawaiian or Other Pacific Islander",50
+"48","2017","Emergency Shelter","Unknown",15
+"49","2017","Emergency Shelter","White",1523
+"50","2017","Other","American Indian or Alaska Native",34
+"51","2017","Other","Asian",26
+"52","2017","Other","Black or African American",396
+"53","2017","Other","Multi-racial",88
+"54","2017","Other","Native Hawaiian or Other Pacific Islander",22
+"55","2017","Other","White",745
+"56","2017","Permanent Housing","American Indian or Alaska Native",41
+"57","2017","Permanent Housing","Asian",21
+"58","2017","Permanent Housing","Black or African American",695
+"59","2017","Permanent Housing","Multi-racial",139
+"60","2017","Permanent Housing","Native Hawaiian or Other Pacific Islander",34
+"61","2017","Permanent Housing","White",774
+"62","2017","Rapid Re-Housing","American Indian or Alaska Native",75
+"63","2017","Rapid Re-Housing","Asian",52
+"64","2017","Rapid Re-Housing","Black or African American",2545
+"65","2017","Rapid Re-Housing","Multi-racial",505
+"66","2017","Rapid Re-Housing","Native Hawaiian or Other Pacific Islander",71
+"67","2017","Rapid Re-Housing","White",1574
+"68","2017","Street Outreach","American Indian or Alaska Native",117
+"69","2017","Street Outreach","Asian",76
+"70","2017","Street Outreach","Black or African American",1734
+"71","2017","Street Outreach","Multi-racial",220
+"72","2017","Street Outreach","Native Hawaiian or Other Pacific Islander",60
+"73","2017","Street Outreach","Unknown",39
+"74","2017","Street Outreach","White",2438
+"75","2017","Transitional Housing","American Indian or Alaska Native",38
+"76","2017","Transitional Housing","Asian",9
+"77","2017","Transitional Housing","Black or African American",401
+"78","2017","Transitional Housing","Multi-racial",44
+"79","2017","Transitional Housing","Native Hawaiian or Other Pacific Islander",21
+"80","2017","Transitional Housing","Unknown",1
+"81","2017","Transitional Housing","White",508
+"82","2016","Emergency Shelter","American Indian or Alaska Native",63
+"83","2016","Emergency Shelter","Asian",34
+"84","2016","Emergency Shelter","Black or African American",1609
+"85","2016","Emergency Shelter","Multi-racial",304
+"86","2016","Emergency Shelter","Native Hawaiian or Other Pacific Islander",41
+"87","2016","Emergency Shelter","Unknown",21
+"88","2016","Emergency Shelter","White",1528
+"89","2016","Other","American Indian or Alaska Native",43
+"90","2016","Other","Asian",16
+"91","2016","Other","Black or African American",370
+"92","2016","Other","Multi-racial",70
+"93","2016","Other","Native Hawaiian or Other Pacific Islander",15
+"94","2016","Other","White",687
+"95","2016","Permanent Housing","American Indian or Alaska Native",43
+"96","2016","Permanent Housing","Asian",17
+"97","2016","Permanent Housing","Black or African American",669
+"98","2016","Permanent Housing","Multi-racial",140
+"99","2016","Permanent Housing","Native Hawaiian or Other Pacific Islander",36
+"100","2016","Permanent Housing","Unknown",2
+"101","2016","Permanent Housing","White",756
+"102","2016","Rapid Re-Housing","American Indian or Alaska Native",42
+"103","2016","Rapid Re-Housing","Asian",34
+"104","2016","Rapid Re-Housing","Black or African American",1638
+"105","2016","Rapid Re-Housing","Multi-racial",242
+"106","2016","Rapid Re-Housing","Native Hawaiian or Other Pacific Islander",38
+"107","2016","Rapid Re-Housing","Unknown",1
+"108","2016","Rapid Re-Housing","White",1086
+"109","2016","Street Outreach","American Indian or Alaska Native",117
+"110","2016","Street Outreach","Asian",77
+"111","2016","Street Outreach","Black or African American",1668
+"112","2016","Street Outreach","Multi-racial",170
+"113","2016","Street Outreach","Native Hawaiian or Other Pacific Islander",51
+"114","2016","Street Outreach","Unknown",24
+"115","2016","Street Outreach","White",2438
+"116","2016","Transitional Housing","American Indian or Alaska Native",50
+"117","2016","Transitional Housing","Asian",13
+"118","2016","Transitional Housing","Black or African American",452
+"119","2016","Transitional Housing","Multi-racial",81
+"120","2016","Transitional Housing","Native Hawaiian or Other Pacific Islander",21
+"121","2016","Transitional Housing","Unknown",1
+"122","2016","Transitional Housing","White",611
+"123","2015","Emergency Shelter","American Indian or Alaska Native",56
+"124","2015","Emergency Shelter","Asian",40
+"125","2015","Emergency Shelter","Black or African American",1635
+"126","2015","Emergency Shelter","Multi-racial",319
+"127","2015","Emergency Shelter","Native Hawaiian or Other Pacific Islander",42
+"128","2015","Emergency Shelter","Unknown",33
+"129","2015","Emergency Shelter","White",1466
+"130","2015","Other","American Indian or Alaska Native",27
+"131","2015","Other","Asian",11
+"132","2015","Other","Black or African American",220
+"133","2015","Other","Multi-racial",35
+"134","2015","Other","Native Hawaiian or Other Pacific Islander",9
+"135","2015","Other","White",502
+"136","2015","Permanent Housing","American Indian or Alaska Native",46
+"137","2015","Permanent Housing","Asian",19
+"138","2015","Permanent Housing","Black or African American",578
+"139","2015","Permanent Housing","Multi-racial",119
+"140","2015","Permanent Housing","Native Hawaiian or Other Pacific Islander",33
+"141","2015","Permanent Housing","Unknown",2
+"142","2015","Permanent Housing","White",737
+"143","2015","Rapid Re-Housing","American Indian or Alaska Native",21
+"144","2015","Rapid Re-Housing","Asian",22
+"145","2015","Rapid Re-Housing","Black or African American",805
+"146","2015","Rapid Re-Housing","Multi-racial",96
+"147","2015","Rapid Re-Housing","Native Hawaiian or Other Pacific Islander",22
+"148","2015","Rapid Re-Housing","Unknown",2
+"149","2015","Rapid Re-Housing","White",571
+"150","2015","Street Outreach","American Indian or Alaska Native",65
+"151","2015","Street Outreach","Asian",26
+"152","2015","Street Outreach","Black or African American",682
+"153","2015","Street Outreach","Multi-racial",76
+"154","2015","Street Outreach","Native Hawaiian or Other Pacific Islander",20
+"155","2015","Street Outreach","Unknown",22
+"156","2015","Street Outreach","White",1191
+"157","2015","Transitional Housing","American Indian or Alaska Native",36
+"158","2015","Transitional Housing","Asian",9
+"159","2015","Transitional Housing","Black or African American",482
+"160","2015","Transitional Housing","Multi-racial",113
+"161","2015","Transitional Housing","Native Hawaiian or Other Pacific Islander",26
+"162","2015","Transitional Housing","Unknown",8
+"163","2015","Transitional Housing","White",612
+"164","2018","Emergency Shelter","American Indian or Alaska Native",101
+"165","2018","Emergency Shelter","Asian",48
+"166","2018","Emergency Shelter","Black or African American",1525
+"167","2018","Emergency Shelter","Multi-racial",313
+"168","2018","Emergency Shelter","Native Hawaiian or Other Pacific Islander",42
+"169","2018","Emergency Shelter","Unknown",46
+"170","2018","Emergency Shelter","White",1845
+"171","2018","Other","American Indian or Alaska Native",40
+"172","2018","Other","Asian",20
+"173","2018","Other","Black or African American",467
+"174","2018","Other","Multi-racial",86
+"175","2018","Other","Native Hawaiian or Other Pacific Islander",6
+"176","2018","Other","Unknown",7
+"177","2018","Other","White",797
+"178","2018","Permanent Housing","American Indian or Alaska Native",42
+"179","2018","Permanent Housing","Asian",24
+"180","2018","Permanent Housing","Black or African American",734
+"181","2018","Permanent Housing","Multi-racial",171
+"182","2018","Permanent Housing","Native Hawaiian or Other Pacific Islander",27
+"183","2018","Permanent Housing","Unknown",10
+"184","2018","Permanent Housing","White",909
+"185","2018","Rapid Re-Housing","American Indian or Alaska Native",59
+"186","2018","Rapid Re-Housing","Asian",49
+"187","2018","Rapid Re-Housing","Black or African American",2848
+"188","2018","Rapid Re-Housing","Multi-racial",458
+"189","2018","Rapid Re-Housing","Native Hawaiian or Other Pacific Islander",54
+"190","2018","Rapid Re-Housing","Unknown",4
+"191","2018","Rapid Re-Housing","White",1747
+"192","2018","Street Outreach","American Indian or Alaska Native",115
+"193","2018","Street Outreach","Asian",47
+"194","2018","Street Outreach","Black or African American",1668
+"195","2018","Street Outreach","Multi-racial",223
+"196","2018","Street Outreach","Native Hawaiian or Other Pacific Islander",69
+"197","2018","Street Outreach","Unknown",66
+"198","2018","Street Outreach","White",2426
+"199","2018","Transitional Housing","American Indian or Alaska Native",22
+"200","2018","Transitional Housing","Asian",9
+"201","2018","Transitional Housing","Black or African American",445
+"202","2018","Transitional Housing","Multi-racial",45
+"203","2018","Transitional Housing","Native Hawaiian or Other Pacific Islander",17
+"204","2018","Transitional Housing","Unknown",3
+"205","2018","Transitional Housing","White",496

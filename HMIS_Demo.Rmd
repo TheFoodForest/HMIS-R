@@ -1,0 +1,337 @@
+---
+title: "HMIS R Demo"
+output:
+  html_document: default
+  pdf_document: default
+---
+# Simple R markdown file to show some database interaction, aggregation, and very basic plotting using HMIS data from public records request that is stored in a local PostgreSQL database
+
+### At a high level, this markdown is an example of working with HMIS data, calculating a couple simple aggregates and measures, then creating flat file output files. This is formatted into a R Markdown file to make it easier to follow, could be migrated into a normal R script rather easily.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+# bring in needed libraries
+library(RPostgreSQL)
+library(dplyr)
+library(tidyverse)
+```
+
+# Bring in config for database connection params.  Establish a connection to db, and get a list of tables in the default schema -> "public" in this case
+
+```{r , echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+ 
+source("config.R")
+
+con = RPostgreSQL::dbConnect(dbDriver("PostgreSQL"), dbname='sac_hmis', host='localhost',
+                             port=5432, user=user, password=pass)
+
+RPostgreSQL::dbListTables(con)
+```
+
+# Grab a couple tables from the databse (source tables - have aggregate tables calculated with sql in local database too)
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+# dplyr doesn't actually store these in memory until collect() is called -> all aggregate functions get turned into sql qeuries that get executed when the data is needed
+
+destinations <- tbl(con, 'destinations')
+destinations
+
+
+```
+
+
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+# library for running raw sql queries rather than having dplyr create them for you -> some functions get a bit weird when converted 
+library(DBI)
+```
+
+# Grab the exit screens table
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+exits <- dplyr::tbl(con, "exit_screen")
+exits
+```
+# Summarize 2019 exit destinations - order by number of people exiting to that destination 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+measure <- exits %>% filter(
+  (Exit_Date > "2018-12-31" && Exit_Reason == "Completed Program")) %>% group_by(
+    Exit_Destination
+    ) %>% summarise(
+                    NumExit = n()
+                    ) %>% arrange(
+                      desc(NumExit)
+                    ) %>% collect() # collect method brings the data  returned from sql query into memory -> 
+                                    # if not done, further aggregations are added to the generated sql and can get a bit strange 
+measure
+```
+# Show the possible Exit Destinations to choose a few to plot 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+measure$Exit_Destination
+
+```
+
+
+
+# Limit the available options for exit destinations to a few I'm interested in and plot those - quickly limit the length of the labels so the plot can still render in the frame.  
+### Visualization isn't a key aspect of this role, however worth quickly visualizing some basic trends in the data. 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+
+outcomes <- c('Rental by client, no ongoing housing subsidy','Rental by client, with other ongoing housing subsidy','Permanent housing (other than RRH) for formerly homeless persons', 'Transitional housing for homeless persons (including homeless youth)', 'Emergency shelter, including hotel or motel paid for with emergency shelter voucher, or RHY-funded Host Home shelter', 'Place not meant for habitation (e.g., a vehicle, an abandoned building, bus/train/subway station/airport or anywhere outside)')
+
+forPlot <- exits %>% filter(
+  Exit_Date >= "2015-01-01" && 
+    Exit_Date < "2019-01-01" &&
+    Exit_Destination %in% outcomes)%>% group_by(Exit_Date, Exit_Destination) %>% summarize(n = n()) %>% arrange(Exit_Date) %>% collect() %>% mutate(Exit_Destination=
+                                                                                                                                        str_trunc(Exit_Destination, 30, "right", ""))
+# show a line plot of the num people exiting per day to each destination since 2015
+
+
+ggplot(data = forPlot, mapping = aes(x = Exit_Date, y = n))  + geom_smooth(mapping = aes(color = Exit_Destination)) 
+# show a bar plot of total exits to each destination 
+ggplot(data = forPlot) + geom_bar(mapping=aes(x=Exit_Destination, y=n, fill=Exit_Destination), stat='identity') + theme(axis.text.x=element_blank(),
+                                                                                                              axis.ticks.x=element_blank())
+```
+# Get a list of the distinct exit reasons to choose a few to plot 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+
+a <- exits %>% filter(!is.na(Exit_Reason)) %>% group_by(Exit_Reason) %>% summarise(n()) %>% collect()
+a$Exit_Reason
+```
+
+
+# Plot the trend in daily exits for a few select exit reasons, then plot a bar of the total number of exits due to the reasons in bar chart.  
+### There seems to be an interesting correlation between the increase in exits due to "Non-compliance with program", and the increase in exits to a "Place not meant for habitation" from 2017 through 2019.  These increases also seem to correlate with a decrease in exits to "Permanent housing". 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+
+
+reasons  <- c('Completed Program','Non-compliance with program','Needs could not be met by program','Left for a housing opportunity before completing program')
+
+forPlot <- exits %>% filter(
+  Exit_Date >= "2015-01-01" && 
+    Exit_Date < "2019-01-01" &&
+    Exit_Reason %in% reasons)%>% group_by(Exit_Date, Exit_Reason) %>% summarize(n = n()) %>% arrange(Exit_Date) %>% collect()
+
+ggplot(data = forPlot, mapping = aes(x = Exit_Date, y = n))  + geom_smooth(mapping = aes(color = Exit_Reason)) 
+ggplot(data = forPlot) + geom_bar(mapping=aes(x=Exit_Reason, y=n, fill=Exit_Reason), stat='identity') + theme(axis.text.x=element_blank(),
+                                                                                                              axis.ticks.x=element_blank())
+```
+
+
+# Look at the clients table 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+clients <- tbl(con, "clients")
+clients
+```
+
+# Summarize the Age demographics, grouped by Race from 2017 on.  Using dplyr here to generate the query, next cell uses DBI package to execute a raw sql query on the database.  
+## Summarize the age by the mean, max, min, and median age values.  Here the "age" function used in the "mutate" function is actually a sql function, not an R function.  Example of how sometimes using the SQL generated by dplyr can be challenging for legacy code to be passed along without communication. 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+race <- clients %>% filter(Created_Date >= "2017-01-01") %>%mutate(age=(age(Birth_Date, now())))  %>% group_by(Race) %>% summarize(
+  n = n(),
+  meanAge = sum(age * (-1)) / count(1),
+  medianAge = median(age * (-1)),
+  minAge = min(age * (-1)),
+  maxAge = max(age * (-1))
+)%>%arrange(
+  desc(n)
+)%>%show_query() # adding show_query() at end of dplyr pipes can help dubug confusing aggregations in legacy code
+race
+```
+# Now gather the same data as above, but use a raw sql query.  Using the query allows me to more easily also add in the 1st and 3rd quartiles in the summary of the age distribution within the race groups.
+# These age calculations are the age of the client on the day they were added to the clients table, assuming that's what "Created_Date" indicates.
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+sql = "select \"Race\"
+, avg((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER)) meanAge
+, min((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER)) minAge
+, PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER))) medianAge
+, PERCENTILE_DISC(0.25) WITHIN GROUP (ORDER BY ((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER))) lowerQuartile
+, PERCENTILE_DISC(0.75) WITHIN GROUP (ORDER BY ((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER))) upperQuartile
+, max((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER)) maxAge
+, COUNT(*) n
+from clients
+WHERE (TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER >= 0
+AND TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER <= 85
+AND TO_CHAR(\"Created_Date\", 'YYYY')::INTEGER = 2017) 
+group by \"Race\"
+order by n desc"
+
+
+raceRawSQL = dbGetQuery(con, sql)
+
+raceRawSQL 
+```
+# Create a custom operator - to generate some formatted queries for me.  Using the operator allows me to vectorize the function calls and not need to bulid a loop in order to generate the queries I need.
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+# formatter operator
+# requires strings to have %s where values should be filled
+'%f%' <- function(x,y) {
+  do.call(sprintf, c(list(x), y))
+}
+
+# examples
+sql1 <- "SELECT * FROM clients WHERE to_char(\"Created_Date\", 'YYYY')::INTEGER = %s" %f% list(2015:2019)
+paste('####SQL1####')
+paste(sql1)
+
+years <- list(2015:2019)
+races <- 'Unknown'
+
+sql2 <- "SELECT * FROM clients WHERE to_char(\"Created_Date\", 'YYYY')::INTEGER = %s AND \"Race\" = '%s' " %f% c(years,races)   
+
+
+paste('####SQL2####')
+paste(sql2)
+  
+```
+
+
+
+# Create a quick loop for running queries that summarize the age stats for each year from 2015-2019.
+## Output a flat file of each summary year with the year formatted into title
+### All above summary tables could easily be output to flat files with the same write.csv() funciton.
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+years <- list(2015:2019)
+
+sqlArray = "select \"Race\"
+, avg((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER)) meanAge
+, min((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER)) minAge
+, max((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER)) maxAge
+, PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER))) medianAge
+, PERCENTILE_DISC(0.25) WITHIN GROUP (ORDER BY ((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER))) lowerQuartile
+, PERCENTILE_DISC(0.75) WITHIN GROUP (ORDER BY ((TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER))) upperQuartile
+, COUNT(*) n
+from clients
+WHERE (TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER >= 0
+AND TO_CHAR(\"Created_Date\"::DATE, 'YYYY')::INTEGER - to_char(\"Birth_Date\", 'YYYY')::INTEGER <= 85
+AND TO_CHAR(\"Created_Date\", 'YYYY')::INTEGER = %s) 
+group by \"Race\"
+order by n desc" %f% years
+
+dataframes <- list()
+yearVec = c(2015:2019)
+for(index in 1:length(sqlArray)) {
+  data <- dbGetQuery(con, sqlArray[index])
+  data$meanage <- floor(data$meanage) # round down their year age
+  dataframes[[index]] <- data
+  write.csv(x = data, file = 'Race_Age_Summary_%s.csv'%f% yearVec[index])
+}
+
+print(dataframes)
+```
+# Generate query for getting program info joined to enrollments 
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+
+sql = "
+SELECT b.\"Program_Id\", b.\"Agency_Id\", b.\"Program_Name\", b.\"Project_Type_Group\",
+a.\"Client_Id\", a.\"Added_Date\", a.\"Zip\", a.\"Chronic_Homeless\", a.\"Prior_Residence\",
+to_char(a.\"Added_Date\", 'YYYY')::INTEGER as Added_year
+from enrollment a 
+left join programs b 
+on a.\"Program_Id\" = b.\"Program_Id\"
+where b.\"Program_End\" is not null 
+and to_char(a.\"Added_Date\", 'YYYY')::INTEGER > 2014
+"
+
+enrollmentPrograms <- dbGetQuery(con, sql)
+
+enrollmentPrograms %>% head()
+```
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+project_type_group <- enrollmentPrograms %>% group_by(Project_Type_Group, added_year) %>%
+                      summarise(numEnroll=n()) 
+
+ggplot(data=project_type_group, mapping=aes(x=added_year)) + geom_bar(aes(y = numEnroll ,fill=Project_Type_Group), stat='identity')
+```
+
+
+
+
+
+
+
+
+
+# See if there is any interesting information related to the zip codes listed for the clients in the enrollment table 
+### Too few have a zip listed to gather any valuable info - at least in data provided in public records request.
+```{r, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE}
+zips <- enrollmentPrograms %>% filter(!is.na(Zip)) %>% group_by(Zip) %>%
+         summarise(numEnroll = n()) %>% arrange(desc(numEnroll))
+
+zips
+```
+# Created the following function in my postgreSQL database to allow for a for loop to be called in a function that I can call to make some querying a bit easier for reporting.  This returns a table with summary of number of people enrolling per race per project type per year. Here is the sql that created that funciton:
+
+```sql
+drop function summarizeRace();
+create or replace function summarizeRace()
+returns table(date varchar,
+			 "Project_Type" varchar,
+			 "Race" varchar,
+			 num_people_enroll int)
+LANGUAGE 'plpgsql'
+as $$
+declare 
+rec RECORD;
+begin
+DROP table if exists yearly_race_temp;
+	create temp table yearly_race_temp 
+			(date varchar,
+			 "Project_Type" varchar,
+			 "Race" varchar,
+			 num_people_enroll int);
+	FOR rec in 
+	(SELECT DISTINCT to_char("Added_Date", 'YYYY') as yearvar FROM enrollment
+		WHERE to_char("Added_Date", 'YYYY') > '2014')
+	LOOP 
+		INSERT INTO yearly_race_temp
+			SELECT rec.yearvar::text as Date,
+			p."Project_Type_Group" as "Project_Type",
+			c."Race", 
+			COUNT(distinct e."Client_Id") Num_People_Enroll
+			FROM enrollment e
+			LEFT JOIN clients c
+			ON e."Client_Id" = c."Client_Id"
+			left join programs p
+			on e."Program_Id" = p."Program_Id"
+			left join exit_screen ex on ex."Enrollment_Id" = e."Enrollment_Id"
+			WHERE e."Added_Date" <> '2014-01-01'
+			AND TO_CHAR(e."Added_Date", 'YYYY') <= rec.yearvar::text
+			and (ex."Exit_Date" > cast((rec.yearvar::text || '-01-01') as date)
+				OR ex."Exit_Date" IS NULL)
+			GROUP BY date, p."Project_Type_Group", c."Race"
+			ORDER BY date, p."Project_Type_Group";
+	END LOOP;
+	 RETURN QUERY
+	 SELECT * from yearly_race_temp;
+ END $$;
+ ```
+
+#Use the function and get the results, write simple summary to csv.  Won't be outputting any more flat files, just a final example of how simple the flat file output is.  
+```{r, echo=TRUE,warning=True,message=True,error=T}
+yearlyRace <- dbGetQuery(con, 'SELECT * from summarizeRace()')
+yearlyRace %>% head()
+
+write.csv(x=yearlyRace, file='yearlyRace_Program_Enrollment.csv')
+```
+```{r}
+yearlyAge <- dbGetQuery(con, "SELECT * FROM summarizeAge()") %>% arrange(desc(Project_Type), Age)
+
+
+projectTypes <- yearlyAge$Project_Type %>% unique() 
+
+projectTypes
+```
+```{r, fig.width=12,fig.height=8}
+
+# ggplot(data=yearlyAge, mapping=aes(x=Age, y=Num_Clients)) + geom_bar(mapping=aes(fill=Project_Type), stat='identity')
+yearlyAge$Age <- sapply(yearlyAge$Age, as.numeric)
+for (project in projectTypes) {
+  data <- yearlyAge %>% filter(Project_Type == project)
+  plot <- ggplot(data= data, mapping=aes(x=Age, y=Num_Clients)) + geom_bar(mapping=aes(fill=date), stat='identity')
+  print(plot + ggtitle(("%s"%f%project)))
+}
+
+```
+
